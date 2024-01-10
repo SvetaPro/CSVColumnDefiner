@@ -14,7 +14,7 @@ def is_email(value):
 def is_phone(value):
     pos_phone = str(value)
     # если число символов >= 6 или регулярное выражение по совпадению (+, числа 1-9, (), -)
-    return (len(pos_phone)>=6) & (re.match(r"[+0-9()-]+", pos_phone) is not None) 
+    return (len(pos_phone)>=8) & (re.match(r"[+0-9()-]+", pos_phone) is not None) 
 
 
 # Выборка столбца в список
