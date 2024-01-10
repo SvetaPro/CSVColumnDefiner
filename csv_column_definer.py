@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText as st
+from tkinter import messagebox as mb
 from tkinter import filedialog as fd
 import os
 import pandas as pd
@@ -7,11 +8,13 @@ import re
 
 # Функция определитель email
 def is_email(value):
-    return 1
+    return str(value).find('@') > 0
 
 # Функция определитель телефона
 def is_phone(value):
-    return 1
+    pos_phone = str(value)
+    # если число символов >= 6 или регулярное выражение по совпадению (+, числа 1-9, (), -)
+    return (len(pos_phone)>=6) & (re.match(r"[+0-9()-]+", pos_phone) is not None) 
 
 
 # Выборка столбца в список
@@ -23,7 +26,7 @@ def get_column(df, cnt_rows, column_ix):
 
 # Функция для чтения .csv файла
 def analze_csv(file_name):
-    df = pd.read_csv(file_name, sep=';', dtype=str)
+    df = pd.read_csv(file_name, header=None, sep=';')
     cnt_rows = df.shape[0] # кол-во строк
     cnt_columns = df.shape[1] # кол-во столбцов
     results = []
@@ -56,6 +59,7 @@ def process_button():
     output_text.delete('1.0', tk.END)
     for col, col_type, count in results:
         output_text.insert(tk.END, f"Столбец {col}: Предполагаемый тип - {col_type}, Количество совпадений - {count}\n")
+    mb.showinfo(title=None, message="Готово")
 
 # Создание графического интерфейса
 window = tk.Tk()
