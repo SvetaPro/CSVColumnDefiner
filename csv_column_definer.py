@@ -17,8 +17,16 @@ def is_phone(value):
     return (len(pos_phone)>=8) & (re.match(r"^[0-9()\-]+$", pos_phone) is not None) 
 
 # Функция определитель имен
-def is_name(value):
+def is_firstname(value):
     return value in ['Артём', 'Вера', 'Михаил', 'Артур', 'Олег', 'Александра', 'Аркадий', 'Роман', 'Юлия', 'Дмитрий', 'Елена' ]
+
+# Функция определитель фамилии
+def is_lastname(value):
+    strval = str(value)
+    if len(strval) > 3:
+        last = value[-3:]
+        return last in ['ова', 'нов', 'дов', 'еев', 'мов', 'ров', 'нко']
+    return False
 
 # Выборка столбца в список
 def get_column(df, cnt_rows, column_ix):
@@ -36,7 +44,8 @@ def analze_csv(file_name):
     for col_num in range(cnt_columns):
         email_count = 0
         phone_count = 0
-        name_count = 0
+        firstname_count = 0
+        lastname_count = 0
         # Получаем список из стобца
         cur_col = get_column(df, cnt_rows, col_num)
         # Перебираем все значения списка
@@ -47,19 +56,24 @@ def analze_csv(file_name):
             if is_phone(item): 
                 phone_count+=1 
                 continue
-            if is_name(item):
-                name_count+=1
+            if is_firstname(item):
+                firstname_count+=1
+                continue
+            if is_lastname(item):
+                lastname_count+=1
                 continue
 
         column_type = "Не удалось определить"
         
-        if (email_count > phone_count) & (email_count > name_count):
+        if (email_count > phone_count) & (email_count > firstname_count) & (email_count > lastname_count):
             column_type = "Email"
-        elif (phone_count > email_count) & (phone_count > name_count):
+        elif (phone_count > email_count) & (phone_count > firstname_count) & (phone_count > lastname_count):
             column_type = "Телефон"
-        elif (name_count > phone_count) & (name_count > email_count):
+        elif (firstname_count > phone_count) & (firstname_count > email_count) & (firstname_count > lastname_count):
             column_type = "Имя"
-        results.append((cur_col[0], column_type, max(email_count, phone_count, name_count)))
+        elif (lastname_count > firstname_count) & (lastname_count > phone_count) & (lastname_count > email_count):
+            column_type = "Фамилия"
+        results.append((cur_col[0], column_type, max(email_count, phone_count, firstname_count, lastname_count)))
     return results
 
 # Обработчик для кнопки
